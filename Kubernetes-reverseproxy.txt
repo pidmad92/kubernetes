@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: fps-ingress-endpoints
+  namespace: production
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: 20m
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "5600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+  labels:
+    type: endpoints-app
+spec:
+  rules:
+  - host: consultapp.pe
+    http:
+      paths:
+      - backend:
+          serviceName: fps-nodeport-web-triaje
+          servicePort: 80
+        path: /
+      - backend:
+          serviceName: fps-nodeport-ws-triaje
+          servicePort: 9002
+        path: /api
+  - hosts:
+    - consultapp.pe
+    secretName: fps-secret-cert-consultapp.pe
